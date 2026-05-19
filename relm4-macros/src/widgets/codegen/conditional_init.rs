@@ -76,7 +76,21 @@ impl Widget {
 }
 
 impl ConditionalWidget {
+    pub(crate) fn init_conditional_init_stream(
+        &self,
+        stream: &mut TokenStream2,
+        model_name: &Ident,
+    ) {
+        if let Some(properties) = &self.properties {
+            let w_name = &self.name;
+            properties.conditional_init_stream(stream, w_name, model_name, true);
+        }
+        self.conditional_init_stream(stream, model_name);
+    }
+
     fn conditional_init_stream(&self, stream: &mut TokenStream2, model_name: &Ident) {
+        stream.extend(quote! {#[doc = "conditional_init_stream"]});
+
         let brach_stream = match &self.branches {
             ConditionalBranches::If(if_branches) => {
                 let mut stream = TokenStream2::new();
